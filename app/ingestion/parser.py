@@ -43,55 +43,58 @@ def infer_metadata(path: Path, text: str) -> DocumentMetadata:
     name = path.stem.replace("_", " ").replace("-", " ").title()
     lowered = f"{path.name} {text[:3000]}".lower()
 
-    product = "General"
+    product = _extract_field(text, "Product") or "General"
     if "5g" in lowered:
-        product = "5G"
+        product = product if product != "General" else "5G"
     elif "esim" in lowered:
-        product = "eSIM"
+        product = product if product != "General" else "eSIM"
     elif "sim" in lowered:
-        product = "SIM"
+        product = product if product != "General" else "SIM"
     elif "billing" in lowered or "invoice" in lowered:
-        product = "Billing"
+        product = product if product != "General" else "Billing"
     elif "fiber" in lowered:
-        product = "Fiber"
+        product = product if product != "General" else "Fiber"
 
-    department = "Support"
+    department = _extract_field(text, "Department") or "Support"
     if "network" in lowered or "tower" in lowered or "outage" in lowered:
-        department = "Network Operations"
+        department = department if department != "Support" else "Network Operations"
     elif "billing" in lowered:
-        department = "Billing Operations"
+        department = department if department != "Support" else "Billing Operations"
     elif "privacy" in lowered or "gdpr" in lowered or "compliance" in lowered:
-        department = "Compliance"
+        department = department if department != "Support" else "Compliance"
     elif "sales" in lowered or "retention" in lowered:
-        department = "Sales"
+        department = department if department != "Support" else "Sales"
 
     doc_type = "Knowledge Base"
     if "sop" in lowered or "procedure" in lowered:
         doc_type = "SOP"
-    elif "runbook" in lowered or "escalation" in lowered:
-        doc_type = "Runbook"
     elif "policy" in lowered:
         doc_type = "Policy"
+    elif "runbook" in lowered or "escalation" in lowered:
+        doc_type = "Runbook"
     elif "rca" in lowered or "incident" in lowered:
         doc_type = "Incident Report"
 
-    region = "Global"
+    region = _extract_field(text, "Region") or "Global"
     if "berlin" in lowered or "germany" in lowered or "deutsche telekom" in lowered:
-        region = "Germany"
+        region = region if region != "Global" else "Germany"
     elif "us" in lowered or "t-mobile" in lowered:
-        region = "United States"
+        region = region if region != "Global" else "United States"
 
     explicit_id = re.search(r"(?im)^Document ID:\s*([A-Z0-9_-]+)\s*$", text)
     doc_id = explicit_id.group(1) if explicit_id else _stable_doc_id(path, product, doc_type)
+    company = _extract_field(text, "Company") or ("Deutsche Telekom" if region == "Germany" else "T-Mobile")
+    access_level = _extract_field(text, "Access Level") or "support_agent"
     return DocumentMetadata(
         doc_id=doc_id,
         title=name,
-        company="Deutsche Telekom" if region == "Germany" else "T-Mobile",
+        company=company,
         department=department,
         region=region,
         doc_type=doc_type,
         product=product,
         created_at=date(2025, 11, 10),
+        access_level=access_level,
         source_path=str(path),
     )
 
@@ -116,6 +119,12 @@ def _parse_pdf(path: Path) -> str:
         for page in doc:
             pages.append(page.get_text())
     return "\n".join(pages)
+
+
+def _extract_field(text: str, field_name: str) -> str | None:
+    pattern = rf"(?im)^{re.escape(field_name)}:\s*(.+?)\s*$"
+    match = re.search(pattern, text)
+    return match.group(1).strip() if match else None
 
 
 def _stable_doc_id(path: Path, product: str, doc_type: str) -> str:
