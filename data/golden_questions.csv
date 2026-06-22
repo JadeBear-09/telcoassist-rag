@@ -1,0 +1,6 @@
+question,expected_doc_id,category
+"A customer in Berlin has poor 5G signal after SIM replacement. What troubleshooting steps should support follow?",DT_5G_SOP_001,5G
+"What is policy DT-SIM-048 about?",DT_SIM_POL_048,SIM
+"When should a billing dispute be escalated?",DT_BILL_010,Billing
+"When should support escalate a local 5G outage?",DT_NET_RUN_004,Network
+"What should support do when eSIM activation fails?",DT_ESIM_002,eSIM
