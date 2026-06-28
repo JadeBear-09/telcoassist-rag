@@ -25,10 +25,19 @@ def evaluate_retrieval(
 
     rows = list(csv.DictReader(golden_path.open("r", encoding="utf-8")))
     if not rows:
-        return {"questions": 0, "precision_at_k": 0.0, "hit_rate": 0.0, "avg_latency_ms": 0.0}
+        return {
+            "questions": 0,
+            "precision_at_k": 0.0,
+            "precision_at_1": 0.0,
+            "hit_rate": 0.0,
+            "mrr_at_k": 0.0,
+            "avg_latency_ms": 0.0,
+        }
 
     hits = 0
     precision_sum = 0.0
+    precision_at_1_sum = 0.0
+    reciprocal_rank_sum = 0.0
     latency_sum = 0.0
 
     for row in rows:
@@ -42,11 +51,18 @@ def evaluate_retrieval(
         match_count = sum(1 for doc_id in retrieved_ids if doc_id == expected_doc_id)
         hits += int(match_count > 0)
         precision_sum += match_count / max(1, len(retrieved_ids))
+        precision_at_1_sum += int(bool(retrieved_ids) and retrieved_ids[0] == expected_doc_id)
+        for rank, doc_id in enumerate(retrieved_ids, start=1):
+            if doc_id == expected_doc_id:
+                reciprocal_rank_sum += 1 / rank
+                break
 
     total = len(rows)
     return {
         "questions": float(total),
         "precision_at_k": round(precision_sum / total, 4),
+        "precision_at_1": round(precision_at_1_sum / total, 4),
         "hit_rate": round(hits / total, 4),
+        "mrr_at_k": round(reciprocal_rank_sum / total, 4),
         "avg_latency_ms": round(latency_sum / total, 2),
     }

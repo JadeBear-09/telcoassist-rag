@@ -27,7 +27,7 @@ class Reranker:
         if self._model is not None:
             pairs = [(question, candidate.chunk.text) for candidate in candidates]
             scores = self._model.predict(pairs)
-            for candidate, score in zip(candidates, scores):
+            for candidate, score in zip(candidates, scores, strict=True):
                 candidate.rerank_score = float(score)
                 candidate.score = 0.45 * candidate.score + 0.55 * float(score)
         else:

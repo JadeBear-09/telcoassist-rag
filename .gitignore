@@ -1,5 +1,7 @@
 .DS_Store
 .env
+.env.*
+!.env.example
 .venv/
 venv/
 __pycache__/
@@ -15,5 +17,43 @@ build/
 
 data/processed/*
 !data/processed/.gitkeep
+data/audit/
+data/feedback/
+data/msmarco/
 qdrant_storage/
+.qdrant-initialized
 *.log
+
+# Personal notes / local deployment scratch
+for_me.md
+NEXT_*_PROMPT.md
+*_PRIVATE.md
+private_notes.md
+
+# Local AWS credentials, deploy outputs, and IaC state
+.aws/
+.aws-sam/
+.elasticbeanstalk/
+.serverless/
+.chalice/
+cdk.out/
+awscliv2.zip
+aws-identity*.json
+aws-account*.json
+app-runner-service*.json
+apprunner-service*.json
+ecr-login*.txt
+deploy-output*.json
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+*.tfstate
+*.tfstate.*
+*.tfvars
+terraform.tfvars
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

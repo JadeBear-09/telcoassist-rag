@@ -5,7 +5,6 @@ import math
 import re
 from dataclasses import dataclass
 
-
 TOKEN_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]+")
 
 
@@ -59,4 +58,4 @@ def hashing_embedding(text: str, dim: int = 384) -> list[float]:
 def cosine_similarity(left: list[float], right: list[float]) -> float:
     if not left or not right or len(left) != len(right):
         return 0.0
-    return sum(a * b for a, b in zip(left, right))
+    return sum(a * b for a, b in zip(left, right, strict=True))

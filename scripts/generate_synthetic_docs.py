@@ -4,7 +4,6 @@ import argparse
 import random
 from pathlib import Path
 
-
 TOPICS = [
     ("5G troubleshooting SOP", "5G", "Network Support"),
     ("SIM activation policy", "SIM", "Support"),
@@ -18,7 +17,9 @@ REGIONS = ["Germany", "United States", "Global"]
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate synthetic telecom documents for RAG demos.")
+    parser = argparse.ArgumentParser(
+        description="Generate synthetic telecom documents for RAG demos."
+    )
     parser.add_argument("--docs", type=int, default=500)
     parser.add_argument("--out", default="data/raw")
     args = parser.parse_args()

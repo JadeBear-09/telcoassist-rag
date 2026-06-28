@@ -83,8 +83,13 @@ def infer_metadata(path: Path, text: str) -> DocumentMetadata:
 
     explicit_id = re.search(r"(?im)^Document ID:\s*([A-Z0-9_-]+)\s*$", text)
     doc_id = explicit_id.group(1) if explicit_id else _stable_doc_id(path, product, doc_type)
-    company = _extract_field(text, "Company") or ("Deutsche Telekom" if region == "Germany" else "T-Mobile")
+    company = _extract_field(text, "Company") or (
+        "Deutsche Telekom" if region == "Germany" else "T-Mobile"
+    )
     access_level = _extract_field(text, "Access Level") or "support_agent"
+    tenant_id = _extract_field(text, "Tenant ID")
+    allowed_roles = _extract_list_field(text, "Allowed Roles")
+    allowed_users = _extract_list_field(text, "Allowed Users")
     return DocumentMetadata(
         doc_id=doc_id,
         title=name,
@@ -96,6 +101,9 @@ def infer_metadata(path: Path, text: str) -> DocumentMetadata:
         created_at=date(2025, 11, 10),
         access_level=access_level,
         source_path=str(path),
+        tenant_id=tenant_id,
+        allowed_roles=allowed_roles,
+        allowed_users=allowed_users,
     )
 
 
@@ -125,6 +133,13 @@ def _extract_field(text: str, field_name: str) -> str | None:
     pattern = rf"(?im)^{re.escape(field_name)}:\s*(.+?)\s*$"
     match = re.search(pattern, text)
     return match.group(1).strip() if match else None
+
+
+def _extract_list_field(text: str, field_name: str) -> list[str]:
+    value = _extract_field(text, field_name)
+    if not value:
+        return []
+    return [part.strip() for part in value.split(",") if part.strip()]
 
 
 def _stable_doc_id(path: Path, product: str, doc_type: str) -> str:

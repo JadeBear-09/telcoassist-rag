@@ -10,7 +10,9 @@ from app.ingestion.pipeline import run_ingestion
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Ingest telecom documents into local and optional Qdrant indexes.")
+    parser = argparse.ArgumentParser(
+        description="Ingest telecom documents into local and optional Qdrant indexes."
+    )
     parser.add_argument("--raw-dir", default="data/raw")
     parser.add_argument("--processed-dir", default="data/processed")
     parser.add_argument("--use-qdrant", action="store_true")

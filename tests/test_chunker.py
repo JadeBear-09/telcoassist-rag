@@ -12,7 +12,11 @@ def test_chunk_document_preserves_doc_id() -> None:
         region="Germany",
         created_at=date(2025, 1, 1),
     )
-    chunks = chunk_document("First paragraph.\n\nSecond paragraph about Berlin 5G.", metadata, max_chars=40)
+    chunks = chunk_document(
+        "First paragraph.\n\nSecond paragraph about Berlin 5G.",
+        metadata,
+        max_chars=40,
+    )
 
     assert chunks
     assert all(chunk.doc_id == "DT_TEST_001" for chunk in chunks)

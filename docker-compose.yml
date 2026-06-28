@@ -3,12 +3,36 @@ services:
     build: .
     env_file:
       - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
     ports:
       - "8000:8000"
     volumes:
       - ./data:/app/data
     depends_on:
       - qdrant
+
+  ingest-qdrant:
+    build: .
+    profiles:
+      - jobs
+    env_file:
+      - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      USE_QDRANT: "true"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - qdrant
+    command:
+      - python
+      - scripts/ingest.py
+      - --raw-dir
+      - data/raw
+      - --processed-dir
+      - data/processed
+      - --use-qdrant
 
   qdrant:
     image: qdrant/qdrant:v1.12.5

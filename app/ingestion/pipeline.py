@@ -10,7 +10,6 @@ from app.ingestion.indexer import LocalChunkRepository, QdrantVectorIndex
 from app.ingestion.parser import parse_document
 from app.models import DocumentChunk, IngestResponse
 
-
 SUPPORTED_SUFFIXES = {".md", ".txt", ".csv", ".pdf"}
 
 

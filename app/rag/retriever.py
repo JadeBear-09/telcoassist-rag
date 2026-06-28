@@ -7,8 +7,8 @@ from collections import defaultdict
 from app.config import Settings
 from app.ingestion.embedder import Embedder
 from app.ingestion.indexer import LocalChunkRepository, LocalVectorIndex, QdrantVectorIndex
-from app.models import DocumentChunk, RetrievalCandidate
-
+from app.models import DocumentChunk, RequestIdentity, RetrievalCandidate
+from app.security.acl import chunk_allowed_for_identity
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]+")
 
@@ -33,14 +33,15 @@ class HybridRetriever:
         top_k: int,
         filters: dict[str, str] | None = None,
         candidate_k: int | None = None,
+        identity: RequestIdentity | None = None,
     ) -> list[RetrievalCandidate]:
         candidate_limit = candidate_k or self.settings.candidate_k
         if not self.chunks:
             return []
 
         query_vector = self.embedder.embed_query(question)
-        vector_results = self.vector.search(query_vector, candidate_limit, filters)
-        keyword_results = self.keyword.search(question, candidate_limit, filters or {})
+        vector_results = self.vector.search(query_vector, candidate_limit, filters, identity)
+        keyword_results = self.keyword.search(question, candidate_limit, filters or {}, identity)
         return reciprocal_rank_fusion(vector_results, keyword_results, top_k=candidate_limit)
 
     def _build_vector_index(self):
@@ -73,6 +74,7 @@ class KeywordIndex:
         question: str,
         limit: int,
         filters: dict[str, str],
+        identity: RequestIdentity | None = None,
     ) -> list[RetrievalCandidate]:
         if not self.chunks:
             return []
@@ -83,8 +85,10 @@ class KeywordIndex:
             scores = [_lexical_score(query_tokens, tokens, self._idf) for tokens in self.tokenized]
 
         candidates: list[RetrievalCandidate] = []
-        for chunk, score in zip(self.chunks, scores):
+        for chunk, score in zip(self.chunks, scores, strict=True):
             if not _metadata_matches(chunk, filters):
+                continue
+            if not chunk_allowed_for_identity(chunk, identity):
                 continue
             normalized = float(score) / (float(score) + 4.0) if score > 0 else 0.0
             candidates.append(
@@ -145,4 +149,10 @@ def _lexical_score(query_tokens: list[str], doc_tokens: list[str], idf: dict[str
 
 def _metadata_matches(chunk: DocumentChunk, filters: dict[str, str]) -> bool:
     metadata = chunk.metadata.model_dump()
-    return all(str(metadata.get(key, "")).lower() == value.lower() for key, value in filters.items())
+    return all(_metadata_value_matches(metadata.get(key), value) for key, value in filters.items())
+
+
+def _metadata_value_matches(actual, expected: str) -> bool:
+    if isinstance(actual, list):
+        return any(str(item).lower() == expected.lower() for item in actual)
+    return str(actual or "").lower() == expected.lower()
