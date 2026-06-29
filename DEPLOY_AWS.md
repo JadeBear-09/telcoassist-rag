@@ -146,14 +146,13 @@ curl -X POST https://<app-runner-url>/ask \
 Summary:
 
 ```text
-I deployed it on AWS because I wanted a realistic startup-style AI deployment path.
-The FastAPI RAG service is containerized, pushed to ECR, and served with App Runner.
+The FastAPI RAG service can be containerized, pushed to ECR, and served with App Runner.
 Qdrant Cloud stores vectors, S3 stores raw documents, Secrets Manager stores API keys,
 CloudWatch captures structured request logs, and GitHub Actions runs tests plus ingestion/eval smoke checks before deploy.
 
-For a larger production version I would move from App Runner to ECS Fargate behind an ALB,
+For a larger production version, move from App Runner to ECS Fargate behind an ALB,
 run ingestion as a separate job triggered by S3 uploads and SQS, add gateway-level rate limits,
-and track retrieval metrics like hit rate, precision@1, MRR, latency, and insufficient-context rate.
+and track retrieval metrics such as hit rate, precision@1, MRR, latency, and insufficient-context rate.
 ```
 
 Short version:
@@ -162,12 +161,4 @@ Short version:
 AWS App Runner for the API, ECR for images, Qdrant Cloud for vector search,
 S3 for documents, Secrets Manager for credentials, CloudWatch for logs,
 and GitHub Actions for CI/CD.
-```
-
-## Resume Bullet
-
-```text
-Deployed a Dockerized FastAPI telecom RAG system on AWS using ECR, App Runner,
-Qdrant Cloud, S3, Secrets Manager, CloudWatch, and GitHub Actions, with readiness checks,
-API-key auth, rate limiting, structured logs, and retrieval eval metrics.
 ```

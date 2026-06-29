@@ -125,7 +125,7 @@ Cause:
 Fix:
 
 - `.gitignore` excludes `.env`, `.env.*`, `data/audit/`, `data/feedback/`,
-  AWS local files, and personal notes like `for_me.md`.
+  AWS local files, and private notes.
 - This file is sanitized and can be pushed.
 
 ## AWS Deploy Notes

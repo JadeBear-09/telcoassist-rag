@@ -29,6 +29,11 @@ for_me.md
 NEXT_*_PROMPT.md
 *_PRIVATE.md
 private_notes.md
+*[Ii]nterview*.md
+*[Rr]esume*.md
+*[Ss]tudy*.md
+*[Ll]earning*.md
+*[Cc]hecklist*.md
 
 # Local AWS credentials, deploy outputs, and IaC state
 .aws/

@@ -1,6 +1,6 @@
 # 1M Document / Passage Scale Plan
 
-Goal: show end-to-end RAG at scale, including upload, ingestion speed, retrieval latency, and honest production architecture.
+Goal: document end-to-end RAG scale behavior, including upload, ingestion speed, retrieval latency, and production architecture.
 
 ## Current 1M Benchmark
 
@@ -63,7 +63,7 @@ Reasons:
 - HTTP request can timeout.
 - App Runner/container worker gets blocked.
 - ZIP can exceed memory/disk limits.
-- Retry/resume is weak.
+- Retry handling is weak.
 - One failed request can waste hours.
 - Security risk: zip bombs and path traversal.
 
@@ -83,11 +83,11 @@ Browser upload
   -> UI shows progress + docs/sec + chunks/sec
 ```
 
-For a public demo, explain:
+For large uploads:
 
 ```text
-The button is for small ZIP demos. For 1M docs I would not stream the ZIP through FastAPI.
-I would upload to S3 using presigned multipart upload, trigger an SQS-backed ingestion worker,
+The button is for small ZIP demos. For 1M docs, avoid streaming the ZIP through FastAPI.
+Upload to S3 using presigned multipart upload, trigger an SQS-backed ingestion worker,
 batch embeddings and Qdrant upserts, and report progress metrics in the dashboard.
 ```
 
@@ -131,14 +131,8 @@ docker compose up -d qdrant
   --recreate
 ```
 
-## Resume Bullet
-
-```text
-Benchmarked RAG vector indexing at 1M-passage scale with Qdrant, reaching ~8.6K passages/sec indexing throughput and ~18.8ms p95 vector query latency using deterministic hashing embeddings, while designing a production ingestion path with S3 multipart uploads, SQS, ECS workers, and batch Qdrant upserts.
-```
-
 ## Scale Summary
 
 ```text
-I added a ZIP upload button for small demos, but for 1M documents I would not upload through the API directly. The production path is S3 multipart upload, SQS eventing, ECS/Fargate ingestion workers, batched embedding, and Qdrant batch upserts. I benchmarked 1M MS MARCO passages locally with Qdrant: indexing took 116.38 seconds, throughput was about 8.6K passages/sec, and p95 vector query latency was 18.78ms. The next improvement would be replacing hashing embeddings with a stronger embedding model and measuring quality-vs-cost tradeoffs.
+The ZIP upload endpoint supports small demos. For 1M documents, avoid direct API upload. The production path is S3 multipart upload, SQS eventing, ECS/Fargate ingestion workers, batched embedding, and Qdrant batch upserts. The 1M MS MARCO local Qdrant benchmark indexed passages in 116.38 seconds, reached about 8.6K passages/sec throughput, and returned 18.78ms p95 vector query latency. The next improvement is replacing hashing embeddings with a stronger embedding model and measuring quality-vs-cost tradeoffs.
 ```

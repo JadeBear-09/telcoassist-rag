@@ -86,7 +86,7 @@ curl -X POST http://127.0.0.1:8000/ask \
 
 ## Enterprise Controls Prototype
 
-This repo now includes app-layer enterprise controls for demos and interview discussion.
+This repo now includes app-layer enterprise controls for prototype validation and technical review.
 They improve posture, but they do not prove HIPAA, PCI, SOC 2, or full enterprise
 compliance by themselves.
 
@@ -332,7 +332,7 @@ written under `data/processed/msmarco_benchmark/`.
 
 ## Scale Simulation
 
-Local demo uses small synthetic docs. Resume-grade scale story:
+Local demo uses small synthetic docs. Scale simulation path:
 
 - generate 500-5,000 synthetic telecom documents for realistic demos
 - generate metadata rows for 1,000,000 documents
@@ -348,7 +348,7 @@ python scripts/generate_synthetic_docs.py --docs 1000 --out data/raw
 
 ## Enterprise Readiness
 
-Current repo is a production-style prototype, not a complete enterprise deployment. See `ENTERPRISE_RAG_READINESS.md` for gap analysis and rebuild notes.
+Current repo is a production-style prototype, not a complete enterprise deployment.
 
 Key remaining enterprise work:
 
@@ -360,10 +360,3 @@ Key remaining enterprise work:
 - stronger embeddings and real reranker model
 - RAGAS/faithfulness evaluation and CI regression gates
 - immutable audit retention, source provenance UI, and CloudWatch monitoring
-
-## Resume Bullets
-
-- Built TelcoAssist, an enterprise RAG system for telecom support and network documents using FastAPI, Qdrant, BM25 hybrid retrieval, reranking, and citation-grounded answers.
-- Designed a scalable ingestion pipeline for SOPs, outage reports, billing policies, and troubleshooting guides with metadata extraction, chunking, embedding, incremental indexing, and document-level traceability.
-- Improved answer reliability using hybrid search, reranking, confidence scoring, source citations, and fallback behavior for insufficient context.
-- Created an evaluation framework with golden Q&A pairs, feedback capture, and Prompt Lab comparisons to measure retrieval precision@k, citation coverage, hallucination-risk proxy, fallback rate, and latency.
