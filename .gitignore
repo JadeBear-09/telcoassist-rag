@@ -26,6 +26,9 @@ qdrant_storage/
 
 # Personal notes / local deployment scratch
 for_me.md
+DEPLOY_AWS.md
+SCALE_1M.md
+troubleshoot.md
 NEXT_*_PROMPT.md
 *_PRIVATE.md
 private_notes.md
